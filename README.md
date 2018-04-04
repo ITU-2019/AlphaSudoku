@@ -1,2 +1,4 @@
 # AlphaSudoku
-The alpha sudoku!
+
+
+![AlphaSudoku](http://www.rosettagrams.com/AlphaVeryEZ.png)
