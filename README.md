@@ -1,0 +1,2 @@
+# AlphaSudoku
+The alpha sudoku!
