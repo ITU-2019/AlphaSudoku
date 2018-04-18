@@ -30,14 +30,14 @@ public class SudokuSolver implements ISudokuSolver {
 
 		int[][] multi = new int[][]{
 		  { 8, 1, 2, 9, 7, 4, 3, 6, 5 },
-		  { 9, 3, 4, 6, 5, 1, 7, 8, 2 },
-		  { 7, 6, 5, 0, 2, 3, 9, 4, 1 },
-		  { 5, 7, 1, 0, 8, 2, 6, 9, 0 },
-		  { 2, 8, 9, 3, 6, 5, 4, 1, 0 },
-		  { 6, 4, 3, 7, 1, 9, 2, 5, 0 },
-		  { 1, 9, 6, 0, 3, 7, 8, 2, 4 },
-		  { 3, 2, 8, 0, 4, 6, 5, 7, 9 },
-		  { 4, 5, 7, 2, 9, 8, 1, 3, 6 }
+		  { 9, 3, 4, 6, 5, 0, 7, 8, 2 },
+		  { 0, 0, 0, 0, 0, 0, 9, 4, 1 },
+		  { 5, 7, 1, 0, 8, 0, 0, 9, 0 },
+		  { 0, 8, 9, 3, 6, 0, 0, 1, 0 },
+		  { 0, 4, 3, 7, 1, 0, 2, 5, 0 },
+		  { 0, 9, 6, 0, 3, 0, 8, 2, 4 },
+		  { 0, 2, 8, 0, 4, 0, 5, 7, 9 },
+		  { 0, 5, 7, 2, 9, 0, 1, 3, 6 }
 		};
 		readInPuzzle(multi);
 	}
@@ -67,17 +67,19 @@ public class SudokuSolver implements ISudokuSolver {
 			System.out.println("X:  " + X);
 			ArrayList<Integer> Dold = (ArrayList<Integer>) D.get(X).clone();
 			System.out.println(Dold);
-			for(Integer V : D.get(X)){
-				if(AC_FC(X,V)){
-					setValue(GetRow(X),GetColumn(X),V);
-					asn.set(X,V);
+			System.out.println(D.get(X));
+			for(int i = 0; i < Dold.size(); i++){
+				System.out.print("Y:  " + Dold.get(i));
+				if(AC_FC(X,Dold.get(i))){
+					setValue(GetRow(X),GetColumn(X),Dold.get(i));
+					asn.set(X,Dold.get(i));
 					ArrayList<Integer> R = FC((ArrayList<Integer>)asn.clone());
 					if(R != null){
 						return R;
 					}
 					asn.set(X,0);
 				}
-				D.set(X,Dold);
+				//D.set(X,Dold);
 			}
 			System.out.println("Error");
 			return null;//failure
