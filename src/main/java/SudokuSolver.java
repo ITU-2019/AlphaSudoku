@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 public class SudokuSolver implements ISudokuSolver {
@@ -19,19 +21,20 @@ public class SudokuSolver implements ISudokuSolver {
 		size = size1;
 		puzzle = new int[size*size][size*size];
 		D = new ArrayList<ArrayList<Integer>>(size*size*size*size);
-		
+
 		//Initialize each D[X]...
-		
+		for(int i = 0; i < size*size*size*size; i++){
+			ArrayList<Integer> block = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+			D.add(i, block);
+		}
 	}
 
 
 	public boolean solve() {
 		ArrayList<Integer> asn = GetAssignment(puzzle);
 		
-		//INITIAL_FC
-		//FC
-
-		return true;
+		if(!INITIAL_FC(asn)) return false;
+		return FC(asn) != null;
 	}
 
 	public void readInPuzzle(int[][] p) {
@@ -43,7 +46,24 @@ public class SudokuSolver implements ISudokuSolver {
 		//YOUR TASK:  Implement FC(asn)
 		//---------------------------------------------------------------------------------
 		public ArrayList FC(ArrayList<Integer> asn) {
-	
+			if(!asn.contains(0)){
+				return asn;
+			}
+			int X = asn.indexOf(0);
+			ArrayList<Integer> Dold = (ArrayList<Integer>) D.get(X).clone();
+
+			for(Integer V : D.get(X)){
+				if(AC_FC(X,V)){
+					asn.set(X,V);
+					ArrayList<Integer> R = FC(asn);
+					if(R != null){
+						return R;
+					}
+					asn.set(X,0);
+				}
+				D.set(X,Dold);
+			}
+
 			return null;//failure
 		}
 
