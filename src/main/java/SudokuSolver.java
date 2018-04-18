@@ -8,7 +8,7 @@ public class SudokuSolver implements ISudokuSolver {
 	int[][] puzzle;
 	int size;
 	ArrayList<ArrayList<Integer>> D; //= new ArrayList<ArrayList<Integer>>();
-	
+
 	public int[][] getPuzzle() {
 		return puzzle;
 	}
@@ -31,8 +31,21 @@ public class SudokuSolver implements ISudokuSolver {
 
 
 	public boolean solve() {
+		int[][] multi = new int[][]{
+		  { 8, 1, 2, 9, 7, 4, 3, 6, 5 },
+		  { 9, 3, 4, 6, 5, 1, 7, 8, 2 },
+		  { 7, 6, 5, 8, 2, 3, 9, 4, 1 },
+		  { 5, 7, 1, 4, 8, 2, 6, 9, 3 },
+		  { 2, 8, 9, 3, 6, 5, 4, 1, 7 },
+		  { 6, 4, 3, 7, 1, 9, 2, 5, 8 },
+		  { 1, 9, 6, 5, 3, 7, 8, 2, 4 },
+		  { 3, 2, 8, 1, 4, 6, 5, 7, 9 },
+		  { 4, 5, 7, 2, 9, 8, 1, 3, 6 }
+		};
+		readInPuzzle(multi);
+
 		ArrayList<Integer> asn = GetAssignment(puzzle);
-		
+
 		if(!INITIAL_FC(asn)) return false;
 		return FC(asn) != null;
 	}
@@ -40,12 +53,13 @@ public class SudokuSolver implements ISudokuSolver {
 	public void readInPuzzle(int[][] p) {
 		puzzle = p;
 	}
-	
-	
+
+
 		//---------------------------------------------------------------------------------
 		//YOUR TASK:  Implement FC(asn)
 		//---------------------------------------------------------------------------------
 		public ArrayList FC(ArrayList<Integer> asn) {
+			System.out.println("FC call");
 			if(!asn.contains(0)){
 				return asn;
 			}
@@ -67,41 +81,41 @@ public class SudokuSolver implements ISudokuSolver {
 			return null;//failure
 		}
 
-	
 
-		
+
+
 		//---------------------------------------------------------------------------------
 		// CODE SUPPORT FOR IMPLEMENTING FC(asn)
 		//
 		// It is possible to implement FC(asn) by using only AC_FC function from below.
-		// 
+		//
 		// If you have time, I strongly reccomend that you implement AC_FC and REVISE from scratch
 		// using only implementation of CONSISTENT algorithm and general utility functions. In my opinion
 		// by doing this, you will gain much more from this exercise.
 		//
 		//---------------------------------------------------------------------------------
-		
-		
-	
+
+
+
 		//------------------------------------------------------------------
 		//				AC_FC
 		//
 		// Implementation of acr-consistency for forward-checking AC-FC(cv).
-		// This is a key component of FC algorithm, and the only function you need to 
+		// This is a key component of FC algorithm, and the only function you need to
 		// use in your FC(asn) implementation
 		//------------------------------------------------------------------
 		public boolean AC_FC(Integer X, Integer V){
 			//Reduce domain Dx
 			D.get(X).clear();
 			D.get(X).add(V);
-			
+
 			//Put in Q all relevant Y where Y>X
 			ArrayList<Integer> Q = new ArrayList<Integer>(); //list of all relevant Y
 			int col = GetColumn(X);
 			int row = GetRow(X);
 			int cell_x = row / size;
 			int cell_y = col / size;
-			
+
 			//all variables in the same column
 			for (int i=0; i<size*size; i++){
 				if (GetVariable(i,col) > X) {
@@ -122,7 +136,7 @@ public class SudokuSolver implements ISudokuSolver {
 					}
 				}
 			}
-		
+
 			//REVISE(Y,X)
 			boolean consistent = true;
 			while (!Q.isEmpty() && consistent){
@@ -132,35 +146,35 @@ public class SudokuSolver implements ISudokuSolver {
 				}
 			}
 			return consistent;
-		}	
-		
-		
+		}
+
+
 		//------------------------------------------------------------------
-		//				REVISE 
+		//				REVISE
 		//------------------------------------------------------------------
 		public boolean REVISE(int Xi, int Xj){
 			Integer zero = new Integer(0);
-			
+
 			assert(Xi >= 0 && Xj >=0);
 			assert(Xi < size*size*size*size && Xj <size*size*size*size);
 			assert(Xi != Xj);
-			
+
 			boolean DELETED = false;
 
-			
+
 			ArrayList<Integer> Di = D.get(Xi);
-			ArrayList<Integer> Dj = D.get(Xj);	
-			
+			ArrayList<Integer> Dj = D.get(Xj);
+
 			for (int i=0; i<Di.size(); i++){
 				Integer vi = (Integer) Di.get(i);
-				ArrayList<Integer> xiEqVal = new ArrayList<Integer>(size*size*size*size);	
+				ArrayList<Integer> xiEqVal = new ArrayList<Integer>(size*size*size*size);
 				for (int var=0; var<size*size*size*size; var++){
-					xiEqVal.add(var,zero);				
+					xiEqVal.add(var,zero);
 				}
 
 				xiEqVal.set(Xi,vi);
-				
-				boolean hasSupport = false;	
+
+				boolean hasSupport = false;
 				for (int j=0; j<Dj.size(); j++){
 					Integer vj = (Integer) Dj.get(j);
 					if (CONSISTENT(xiEqVal, Xj, vj)) {
@@ -168,37 +182,37 @@ public class SudokuSolver implements ISudokuSolver {
 						break;
 					}
 				}
-				
+
 				if (hasSupport == false) {
 					Di.remove((Integer) vi);
 					DELETED = true;
 				}
-				
+
 			}
-			
+
 			return DELETED;
 		}
-				
-		
 
-		
+
+
+
 		//------------------------------------------------------------------
-		//CONSISTENT: 
+		//CONSISTENT:
 		//
-		//Given a partiall assignment "asn"  checks whether its extension with 
+		//Given a partiall assignment "asn"  checks whether its extension with
 		//variable = val is consistent with Sudoku rules, i.e. whether it violates
-		//any of constraints whose all variables in the scope have been assigned. 
+		//any of constraints whose all variables in the scope have been assigned.
 		//This implicitly encodes all constraints describing Sudoku.
 		//
 		//Before it returns, it undoes the temporary assignment variable=val
 		//It can be used as a building block for REVISE and AC-FC
 		//
-		//NOTE: the procedure assumes that all assigned values are in the range 
-		// 		{0,..,9}. 
+		//NOTE: the procedure assumes that all assigned values are in the range
+		// 		{0,..,9}.
 		//-------------------------------------------------------------------
 		public boolean CONSISTENT(ArrayList<Integer> asn, Integer variable, Integer val) {
 			Integer v1,v2;
-			
+
 			//variable to be assigned must be clear
 			assert(asn.get(variable) == 0);
 			asn.set(variable,val);
@@ -218,9 +232,9 @@ public class SudokuSolver implements ISudokuSolver {
 		 			}
 		 		}
 		 	}
-		
 
-		 	
+
+
 		 	//alldiff(row[j])
 		 	for (int j=0; j<size*size; j++) {
 		 		for (int i=0; i<size*size; i++) {
@@ -229,14 +243,14 @@ public class SudokuSolver implements ISudokuSolver {
 			 				v1 = (Integer) asn.get(GetVariable(i,j));
 			 				v2 = (Integer) asn.get(GetVariable(k,j));
 				 			if (v1 != 0 && v2 != 0 && v1.compareTo(v2) == 0) {
-				 				asn.set(variable,0);			 				
+				 				asn.set(variable,0);
 				 				return false;
 				 			}
 			 			}
 		 			}
 		 		}
 		 	}
-		 	
+
 
 		 	//alldiff(block[size*i,size*j])
 		 	for (int i=0; i<size; i++) {
@@ -251,13 +265,13 @@ public class SudokuSolver implements ISudokuSolver {
 		 				 				v1 = (Integer) asn.get(var1);
 		 				 				v2 = (Integer) asn.get(var2);
 		 		 			 			if (v1 != 0 && v2 != 0 && v1.compareTo(v2) == 0) {
-		 					 				asn.set(variable,0);	 		 			 				
+		 					 				asn.set(variable,0);
 		 					 				return false;
 		 					 			}
 		 		 					}
 		 		 				}
 		 		 			}
-	 
+
 		 				}
 		 			}
 		 		}
@@ -265,17 +279,18 @@ public class SudokuSolver implements ISudokuSolver {
 
 			asn.set(variable,0);
 			return true;
-		}	
-		
-		
+		}
 
-	
+
+
+
 		//------------------------------------------------------------------
 		//						INITIAL_FC
 		//------------------------------------------------------------------
 		public boolean INITIAL_FC(ArrayList<Integer> anAssignment) {
-			//Enforces consistency between unassigned variables and all 
-			//initially assigned values; 
+			System.out.println("INITIAL_FC call");
+			//Enforces consistency between unassigned variables and all
+			//initially assigned values;
 			for (int i=0; i<anAssignment.size(); i++){
 				Integer V = (Integer) anAssignment.get(i);
 				if (V != 0){
@@ -286,29 +301,29 @@ public class SudokuSolver implements ISudokuSolver {
 						if (REVISE(Y,i)) {
 							consistent = !D.get(Y).isEmpty();
 						}
-					}	
+					}
 					if (!consistent) return false;
 				}
 			}
-			
+
 			return true;
 		}
-		
-		
-	
-		
+
+
+
+
 		//------------------------------------------------------------------
 		//						GetRelevantVariables
 		//------------------------------------------------------------------
 		public ArrayList<Integer> GetRelevantVariables(Integer X){
-			//Returns all variables that are interdependent of X, i.e. 
+			//Returns all variables that are interdependent of X, i.e.
 			//all variables involved in a binary constraint with X
 			ArrayList<Integer> Q = new ArrayList<Integer>(); //list of all relevant Y
 			int col = GetColumn(X);
 			int row = GetRow(X);
 			int cell_x = row / size;
 			int cell_y = col / size;
-			
+
 			//all variables in the same column
 			for (int i=0; i<size*size; i++){
 				if (GetVariable(i,col) != X) {
@@ -328,12 +343,12 @@ public class SudokuSolver implements ISudokuSolver {
 						Q.add(GetVariable(i,j));
 					}
 				}
-			}	
-			
+			}
+
 			return Q;
 		}
-		
-		
+
+
 
 
 
@@ -353,9 +368,9 @@ public class SudokuSolver implements ISudokuSolver {
 				}
 			}
 			return asn;
-		}	
-		
-	
+		}
+
+
 		public int[][] GetPuzzle(ArrayList asn) {
 			int[][] p = new int[size*size][size*size];
 			for (int i=0; i<size*size; i++) {
@@ -367,27 +382,27 @@ public class SudokuSolver implements ISudokuSolver {
 			return p;
 		}
 
-	
+
 		//------------------------------------------------------------------
 		//Utility functions
 		//-------------------------------------------------------------------
 		public int GetVariable(int i, int j){
 			assert(i<size*size && j<size*size);
-			assert(i>=0 && j>=0);		
-			return (i*size*size + j);	
-		}	
-		
-		
+			assert(i>=0 && j>=0);
+			return (i*size*size + j);
+		}
+
+
 		public int GetRow(int X){
-			return (X / (size*size)); 	
-		}	
-		
+			return (X / (size*size));
+		}
+
 		public int GetColumn(int X){
-			return X - ((X / (size*size))*size*size);	
-		}	
-		
-		
-		
-		
-		
+			return X - ((X / (size*size))*size*size);
+		}
+
+
+
+
+
 }
