@@ -33,7 +33,7 @@ public class SudokuSolver implements ISudokuSolver {
 	public boolean solve() {
 		ArrayList<Integer> asn = GetAssignment(puzzle);
 		
-		if(!INITIAL_FC(asn)) return false;
+		//if(!INITIAL_FC(asn)) return false;
 		return FC(asn) != null;
 	}
 
@@ -47,15 +47,18 @@ public class SudokuSolver implements ISudokuSolver {
 		//---------------------------------------------------------------------------------
 		public ArrayList FC(ArrayList<Integer> asn) {
 			if(!asn.contains(0)){
+				System.out.println("Zero contained !");
 				return asn;
 			}
 			int X = asn.indexOf(0);
+			System.out.println("X:  " + X);
 			ArrayList<Integer> Dold = (ArrayList<Integer>) D.get(X).clone();
-
+			System.out.println(Dold);
 			for(Integer V : D.get(X)){
 				if(AC_FC(X,V)){
+					setValue(GetRow(X),GetColumn(X),V);
 					asn.set(X,V);
-					ArrayList<Integer> R = FC(asn);
+					ArrayList<Integer> R = FC((ArrayList<Integer>)asn.clone());
 					if(R != null){
 						return R;
 					}
@@ -63,7 +66,7 @@ public class SudokuSolver implements ISudokuSolver {
 				}
 				D.set(X,Dold);
 			}
-
+			System.out.println("Error");
 			return null;//failure
 		}
 
