@@ -27,10 +27,7 @@ public class SudokuSolver implements ISudokuSolver {
 			ArrayList<Integer> block = new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9));
 			D.add(i, block);
 		}
-	}
 
-
-	public boolean solve() {
 		int[][] multi = new int[][]{
 		  { 8, 1, 2, 9, 7, 4, 3, 6, 5 },
 		  { 9, 3, 4, 6, 5, 1, 7, 8, 2 },
@@ -43,6 +40,10 @@ public class SudokuSolver implements ISudokuSolver {
 		  { 4, 5, 7, 2, 9, 8, 1, 3, 6 }
 		};
 		readInPuzzle(multi);
+	}
+
+
+	public boolean solve() {
 
 		ArrayList<Integer> asn = GetAssignment(puzzle);
 
