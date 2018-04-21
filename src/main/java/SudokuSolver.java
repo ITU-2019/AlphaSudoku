@@ -26,9 +26,9 @@ public class SudokuSolver implements ISudokuSolver {
 		D = new ArrayList<ArrayList<Integer>>(size*size*size*size);
 
 		//Initialize each D[X]...
-		for(int i = 0; i < size*size*size*size; i++){
+		for (int i = 0; i < size*size*size*size; i++) {
 			ArrayList<Integer> block = new ArrayList<>(size*size);
-			for(int j = 1; j <= size*size; j++){
+			for (int j = 1; j <= size*size; j++) {
 				block.add(j);
 			}
 			D.add(i, block);
@@ -39,7 +39,12 @@ public class SudokuSolver implements ISudokuSolver {
 		ArrayList<Integer> asn = GetAssignment(puzzle);
 		if(!INITIAL_FC(asn)) return false;
 
-
+		ArrayList<Integer> solution = FC(asn);
+		int [][] puzzleOld = getPuzzle();
+		if (solution == null) {
+			readInPuzzle(puzzleOld);
+			return false;
+		}
 
 		return FC(asn) != null;
 	}
@@ -85,49 +90,33 @@ public class SudokuSolver implements ISudokuSolver {
 	//YOUR TASK:  Implement FC(asn)
 	//---------------------------------------------------------------------------------
 	public ArrayList FC(ArrayList<Integer> asn) {
-
+		// No elements have value 0.
 		if (!asn.contains(0)) {
 			return asn;
 		}
+		// First element w. value 0.
 		int X = asn.indexOf(0);
 
-		if (DEBUG) System.out.println("Working on: " + X + " , with values: ");
-		if (DEBUG) System.out.println(D.get(X));
-
+		// Deep clone as we want to not have object references.
 		ArrayList<ArrayList<Integer>> Dold = deepCloneD(D);
 		ArrayList<Integer> R;
 
-		ArrayList<Integer> arr = (ArrayList<Integer>)D.get(X).clone();
-		for (int i = 0; i < arr.size(); i++) {
-			Integer V = arr.get(i);
-			if (DEBUG) System.out.println("Trying value: " + V);
-
-			if (DEBUG) System.out.println("Set X: " + X + " value: " + V);
-
-			if (AC_FC(X,V)) {
-				if (DEBUG) System.out.println("--> Success");
-				setValue(GetColumn(X),GetRow(X),V);
-				printBoard();
-				printDomain();
-
-
-				asn.set(X,V);
-				R = FC((ArrayList<Integer>)asn.clone());
+		// Store clone, as AC_FC() modifies D.
+		ArrayList<Integer> arr = (ArrayList<Integer>) D.get(X).clone();
+		for (Integer V : arr) {
+			if (AC_FC(X, V)) {
+				asn.set(X, V);
+				setValue(GetColumn(X), GetRow(X), V);
+				R = FC(asn);
 				if (R != null) {
 					return R;
 				}
 
-				if (DEBUG) System.out.println("Reverting...");
 				asn.set(X, new Integer(0));
-			} else {
-				if (DEBUG) System.out.println("--> Failed");
 			}
 			D = deepCloneD(Dold);
-
-			if (DEBUG) System.out.println("Post try...");
-			if (DEBUG) System.out.println(arr);
 		}
-		return null;//failure
+		return null;
 	}
 
 	//---------------------------------------------------------------------------------
