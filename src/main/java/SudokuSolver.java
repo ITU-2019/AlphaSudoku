@@ -79,13 +79,15 @@ public class SudokuSolver implements ISudokuSolver {
 		if(!INITIAL_FC(asn)) return false;
 
 		ArrayList<Integer> solution = FC(asn);
+		// Store puzzle state.
 		int [][] puzzleOld = getPuzzle();
 		if (solution == null) {
+			// Revert to old puzzle.
 			readInPuzzle(puzzleOld);
 			return false;
 		}
 
-		return FC(asn) != null;
+		return true;
 	}
 
 	public void readInPuzzle(int[][] p) {
