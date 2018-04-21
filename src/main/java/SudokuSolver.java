@@ -35,24 +35,6 @@ public class SudokuSolver implements ISudokuSolver {
 		}
 	}
 
-	public boolean solve() {
-		ArrayList<Integer> asn = GetAssignment(puzzle);
-		if(!INITIAL_FC(asn)) return false;
-
-		ArrayList<Integer> solution = FC(asn);
-		int [][] puzzleOld = getPuzzle();
-		if (solution == null) {
-			readInPuzzle(puzzleOld);
-			return false;
-		}
-
-		return FC(asn) != null;
-	}
-
-	public void readInPuzzle(int[][] p) {
-		puzzle = p;
-	}
-
 	public static ArrayList<ArrayList<Integer>> deepCloneD(ArrayList<ArrayList<Integer>> curD){
 		ArrayList<ArrayList<Integer>> res = new ArrayList<ArrayList<Integer>>();
 
@@ -62,6 +44,9 @@ public class SudokuSolver implements ISudokuSolver {
 		return res;
 	}
 
+	/**
+	 * Helper functions ----------------------------------------------------------
+	 */
 	public void printDomain() {
 		if (DEBUG) System.out.println("Current domain");
 		for (int i = 0; i < D.size(); i++) {
@@ -85,6 +70,27 @@ public class SudokuSolver implements ISudokuSolver {
 			if (DEBUG) System.out.println();
 		}
 	}
+	/**
+	 * ---------------------------------------------------------------------------
+	 */
+
+	public boolean solve() {
+		ArrayList<Integer> asn = GetAssignment(puzzle);
+		if(!INITIAL_FC(asn)) return false;
+
+		ArrayList<Integer> solution = FC(asn);
+		int [][] puzzleOld = getPuzzle();
+		if (solution == null) {
+			readInPuzzle(puzzleOld);
+			return false;
+		}
+
+		return FC(asn) != null;
+	}
+
+	public void readInPuzzle(int[][] p) {
+		puzzle = p;
+	}
 
 	//---------------------------------------------------------------------------------
 	//YOUR TASK:  Implement FC(asn)
@@ -103,19 +109,25 @@ public class SudokuSolver implements ISudokuSolver {
 
 		// Store clone, as AC_FC() modifies D.
 		ArrayList<Integer> arr = (ArrayList<Integer>) D.get(X).clone();
+		// Go over all domain values for field 'X'.
 		for (Integer V : arr) {
+
+			// Check consistency if we set 'X' to 'V'.
 			if (AC_FC(X, V)) {
 				asn.set(X, V);
 				setValue(GetColumn(X), GetRow(X), V);
+				// Recursive call, go to next field.
 				R = FC(asn);
-				if (R != null) {
+				if (R != null) { // Recursion didn't work, try next value in 'Dx'
 					return R;
 				}
-
 				asn.set(X, new Integer(0));
 			}
+			// Revert domain.
 			D = deepCloneD(Dold);
 		}
+
+		// No suitable value for X was found.
 		return null;
 	}
 
