@@ -113,11 +113,11 @@ public class PuzzleTest{
           { 5,0,0 , 6,0,8 , 0,0,1 }
         };
 
-        // assertTrue(testSolution(multi));
+        assertTrue(testSolution(multi));
     }
 
     @Test
-    public void OnlinePuzzle1() {
+    public void OnlinePuzzle1Easy() {
         int[][] multi = new int[][]{
 		  { 5,3,0 , 0,7,0 , 0,0,0 },
 		  { 6,0,0 , 1,9,5 , 0,0,0 },
@@ -130,7 +130,58 @@ public class PuzzleTest{
 		  { 0,0,0 , 0,8,0 , 0,7,9 }
 		};
 
-        //assertTrue(testSolution(multi));
+        assertTrue(testSolution(multi));
+    }
+
+    @Test
+    public void OnlinePuzzle3Hard() {
+        int[][] multi = new int[][]{
+            { 0,0,0 , 0,0,0 , 0,0,0 },
+            { 0,0,0 , 0,0,3 , 0,0,0 },
+            { 0,0,1 , 0,2,0 , 0,0,0 },
+            { 0,0,0 , 5,0,7 , 0,0,0 },
+            { 0,0,4 , 0,0,0 , 1,0,0 },
+            { 0,9,0 , 0,0,0 , 0,0,0 },
+            { 5,0,0 , 0,0,0 , 0,7,3 },
+            { 0,0,2 , 0,1,0 , 0,0,0 },
+		    { 0,0,0 , 0,4,0 , 0,0,9 }
+		};
+
+        assertTrue(testSolution(multi));
+    }
+
+    @Test
+    public void OnlinePuzzle4Medium() {
+        int[][] multi = new int[][]{
+            { 0,0,2 , 0,0,0 , 0,0,0 },
+            { 0,0,3 , 0,1,0 , 0,0,6 },
+            { 0,4,0 , 0,2,0 , 0,3,0 },
+            { 1,0,0 , 0,0,3 , 0,0,9 },
+            { 0,0,5 , 0,0,0 , 4,0,0 },
+            { 2,0,0 , 6,0,0 , 0,0,8 },
+            { 0,9,0 , 0,7,0 , 0,4,0 },
+            { 7,0,0 , 0,8,0 , 5,0,0 },
+            { 0,0,0 , 0,0,0 , 3,0,0 }
+        };
+
+        assertTrue(testSolution(multi));
+    }
+
+    @Test
+    public void OnlinePuzzle5Medium() {
+        int[][] multi = new int[][]{
+            { 8,9,2 , 0,0,3 , 0,1,4 },
+            { 0,0,0 , 0,0,0 , 0,0,0 },
+            { 0,0,0 , 0,6,8 , 0,7,0 },
+            { 4,5,0 , 0,8,0 , 0,0,1 },
+            { 0,0,8 , 0,0,0 , 2,0,0 },
+            { 1,0,3 , 7,0,0 , 5,0,0 },
+            { 0,7,1 , 0,0,6 , 0,5,0 },
+            { 5,0,9 , 2,0,0 , 0,8,0 },
+            { 6,0,0 , 0,0,7 , 0,0,9 },
+        };
+
+        assertTrue(testSolution(multi));
     }
 
 

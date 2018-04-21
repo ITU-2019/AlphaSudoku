@@ -7,6 +7,9 @@ public class SudokuSolver implements ISudokuSolver {
 
 	int[][] puzzle;
 	int size;
+	int count = 0;
+	boolean DEBUG = false;
+
 	ArrayList<ArrayList<Integer>> D; //= new ArrayList<ArrayList<Integer>>();
 
 	public int[][] getPuzzle() {
@@ -34,8 +37,10 @@ public class SudokuSolver implements ISudokuSolver {
 
 	public boolean solve() {
 		ArrayList<Integer> asn = GetAssignment(puzzle);
-		//if(!INITIAL_FC(asn)) return false;
 		if(!INITIAL_FC(asn)) return false;
+
+
+
 		return FC(asn) != null;
 	}
 
@@ -52,39 +57,76 @@ public class SudokuSolver implements ISudokuSolver {
 		return res;
 	}
 
+	public void printDomain() {
+		if (DEBUG) System.out.println("Current domain");
+		for (int i = 0; i < D.size(); i++) {
+			ArrayList<Integer> arr = D.get(i);
+			String listString = "";
+			for (Integer s : arr)
+	        {
+	            listString += s + "\t";
+	        }
+			if (DEBUG) System.out.println(i + ": " + listString);
+		}
+	}
+
+	public void printBoard() {
+		if (DEBUG) System.out.println("Current board");
+		int[][] board = getPuzzle();
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board.length; j++) {
+				if (DEBUG) System.out.print(((j*9)+i) + ":\t" + board[i][j] + "\t");
+			}
+			if (DEBUG) System.out.println();
+		}
+	}
+
 	//---------------------------------------------------------------------------------
 	//YOUR TASK:  Implement FC(asn)
 	//---------------------------------------------------------------------------------
 	public ArrayList FC(ArrayList<Integer> asn) {
-		if(!asn.contains(0)){
+
+		if (!asn.contains(0)) {
 			return asn;
 		}
 		int X = asn.indexOf(0);
 
-		
-		//System.out.println("X:  " + X);
-		
+		if (DEBUG) System.out.println("Working on: " + X + " , with values: ");
+		if (DEBUG) System.out.println(D.get(X));
+
 		ArrayList<ArrayList<Integer>> Dold = deepCloneD(D);
 		ArrayList<Integer> R;
-		//System.out.println(Dold);
-		//System.out.println(D.get(X));
-		
-		for(Integer V : D.get(X)){
-			
-			//System.out.print("Y:  " + Dold.get(i));
-			
-			if(AC_FC(X,V)){
-				//setValue(GetRow(X),GetColumn(X),V);
+
+		ArrayList<Integer> arr = (ArrayList<Integer>)D.get(X).clone();
+		for (int i = 0; i < arr.size(); i++) {
+			Integer V = arr.get(i);
+			if (DEBUG) System.out.println("Trying value: " + V);
+
+			if (DEBUG) System.out.println("Set X: " + X + " value: " + V);
+
+			if (AC_FC(X,V)) {
+				if (DEBUG) System.out.println("--> Success");
+				setValue(GetColumn(X),GetRow(X),V);
+				printBoard();
+				printDomain();
+
+
 				asn.set(X,V);
 				R = FC((ArrayList<Integer>)asn.clone());
-				if(R != null){
+				if (R != null) {
 					return R;
 				}
-				asn.set(X,new Integer(0));
+
+				if (DEBUG) System.out.println("Reverting...");
+				asn.set(X, new Integer(0));
+			} else {
+				if (DEBUG) System.out.println("--> Failed");
 			}
 			D = deepCloneD(Dold);
+
+			if (DEBUG) System.out.println("Post try...");
+			if (DEBUG) System.out.println(arr);
 		}
-		System.out.println("Error");
 		return null;//failure
 	}
 
@@ -137,7 +179,7 @@ public class SudokuSolver implements ISudokuSolver {
 		}
 		//REVISE(Y,X)
 		boolean consistent = true;
-		while (!Q.isEmpty() && consistent){
+		while (!Q.isEmpty() && consistent) {
 			Integer Y = (Integer) Q.remove(0);
 			if (REVISE(Y,X)) {
 				consistent = !D.get(Y).isEmpty();
@@ -260,7 +302,7 @@ public class SudokuSolver implements ISudokuSolver {
 	//						INITIAL_FC
 	//------------------------------------------------------------------
 	public boolean INITIAL_FC(ArrayList<Integer> anAssignment) {
-	
+
 		//Enforces consistency between unassigned variables and all
 		//initially assigned values;
 		for (int i=0; i<anAssignment.size(); i++){
